@@ -1,0 +1,29 @@
+import itertools
+
+with open('input.txt', 'r') as file:
+	length = int(file.readline().strip())
+	s = [x.strip() for x in file.readlines()]
+
+kmers = [''.join(x) for x in list(itertools.product('ACGT', repeat = length))]
+
+def score(kmer1, kmer2):
+	distance = 0
+	for index in range(len(kmer1)):
+		if kmer1[index] != kmer2[index]:
+			distance += 1
+	return distance
+
+kmer_dict = {x : 0 for x in kmers}
+for kmer in kmers:
+	total_score = 0
+	for dna in s:
+		minimum_score = float("inf")
+		for position in range(len(dna) - length + 1):
+			kmer_score = score(kmer, dna[position : position + length])
+			if kmer_score < minimum_score:
+				minimum_score = kmer_score
+		total_score = total_score + minimum_score
+	kmer_dict[kmer] = total_score
+
+minimum_key = min(kmer_dict, key = kmer_dict.get)
+print(minimum_key)
